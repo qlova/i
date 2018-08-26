@@ -158,7 +158,12 @@ var Statement = compiler.Statement {
 		var filename = c.Scanners[len(c.Scanners)-1].Filename
 		var line = c.Scanners[len(c.Scanners)-1].Line-1
 		
-		var cache = c.NewCache("", "}")
+		var cache compiler.Cache
+		if c.ScanIf(":") {
+			cache = c.NewCache("", "\n")
+		} else {
+			cache = c.NewCache("", "}")
+		}
 		
 		//This actually creates a function.
 		Function.Compile = func(c *compiler.Compiler) {

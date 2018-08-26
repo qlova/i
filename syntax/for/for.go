@@ -24,7 +24,11 @@ var Statement = compiler.Statement{
 		c.Script.ForEachList("", variable, array.Type.(qlova.List), func(q *qlova.Script) {
 			c.GainScope()
 			c.SetVariable(variable, *compiler.ScriptType(array.Type.(qlova.List).Subtype()))
-			c.CompileBlock("", "}")
+			if c.ScanIf(":") {
+				c.CompileBlock("", "\n")
+			} else {
+				c.CompileBlock("", "}")
+			}
 			c.LoseScope()
 		})
 	},

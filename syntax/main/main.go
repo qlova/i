@@ -11,7 +11,11 @@ var Statement = compiler.Statement{
 	OnScan: func(c *compiler.Compiler) {
 		c.Script.Main(func(q *qlova.Script) {
 			c.GainScope()
-			c.CompileBlock("", "}")
+			if c.ScanIf(":") {
+				c.CompileBlock("", "\n")
+			} else {
+				c.CompileBlock("", "}")
+			}
 			c.LoseScope()
 		})
 	},
