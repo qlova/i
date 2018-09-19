@@ -1,15 +1,17 @@
-package Main 
+package If
 
 import "github.com/qlova/script/compiler"
-import qlova "github.com/qlova/script"
+import ."github.com/qlova/script"
 
 var Statement = compiler.Statement{
 	Name: compiler.Translatable{
-		compiler.English: "main",
+		compiler.English: "if",
 	},
 	
 	OnScan: func(c *compiler.Compiler) {
-		c.Script.Main(func(q *qlova.Script) {
+		var condition = c.ScanType(Boolean{}).(Boolean)
+		
+		c.If(condition, func(q *Script) {
 			c.GainScope()
 			if c.ScanIf(":") {
 				c.ScanStatement()

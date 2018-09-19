@@ -1,36 +1,62 @@
 package Array
 
 import "github.com/qlova/script/compiler"
-import "github.com/qlova/script"
+import . "github.com/qlova/script"
 import "github.com/qlova/i/syntax/errors"
 
-var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) *compiler.Type {
-	if array, ok := a.Type.(script.Array); ok && symbol == "[" {
+var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
+	if array, ok := a.(Array); ok && symbol == "[" {
 		
-		if n, ok := b.Type.(script.Number); !ok {
+		if n, ok := b.(Number); !ok {
 			c.RaiseError(errors.IndexError())
 		} else {
 			c.Expecting("]")
-			return compiler.ScriptType(c.Script.IndexArray(array, n))
+
+			return c.Index(array, n)
 		}
 		
 	}
 	return nil
 }
 
+var Statement = compiler.Statement {
+	Detect: func(c *compiler.Compiler) bool {
+		if c.GetVariable(c.Token()).Defined {
+			var name = c.Token()
+			var variable = c.Variable(name)
+
+			if array, ok := variable.(Array); ok && c.Peek() == "[" {
+				c.Scan()
+				
+				var index = c.ScanType(c.Number()).(Number)
+				c.Expecting("]")
+				
+				c.Expecting("=")
+			
+				c.Modify(array, index, c.ScanType(array.SubType()))
+				return true
+			}
+		}
+		return false
+	},
+}
+
 var Expression = compiler.Expression{
-	Detect: func(c *compiler.Compiler) *compiler.Type {
+	Detect: func(c *compiler.Compiler) compiler.Type {
 		
 		if c.Token() == "#" {
 			var array = c.Shunt(c.Expression(), 5) //Custom operator precidence.
 			
-			switch array.Type.(type) {
-				case script.Array:
-					return compiler.ScriptType(c.Script.LengthArray(array.Type.(script.Array)))
+			switch array.(type) {
+				case Array:
+					return c.Length(array)
+					
+				case List:
+					return c.Length(array)
 				
 				default:
 					c.RaiseError(compiler.Translatable{
-						compiler.English: "Cannot take the length of type "+array.Type.Name(),
+						compiler.English: "Cannot take the length of type "+array.Name(),
 					})
 			}
 		}
@@ -43,21 +69,15 @@ var Expression = compiler.Expression{
 				c.Scan()
 				
 				var expression = c.ScanExpression()
-				var elements []script.Type
+				var elements []Type
 				
-				elements = append(elements, expression.Type)
+				elements = append(elements, expression)
 				
 				for {
 					if c.Peek() == "," {
 						
 						c.Scan()
-						expression = c.ScanExpression()
-						
-						if !expression.Type.Equals(elements[0]) {
-							c.RaiseError(errors.Inconsistent(expression, elements[0]))
-						}
-						
-						elements = append(elements, expression.Type)
+						elements = append(elements, c.ScanType(elements[0]))
 						
 					} else {
 						c.Expecting("]")
@@ -66,20 +86,13 @@ var Expression = compiler.Expression{
 					}
 				}
 				
-				return compiler.ScriptType(c.Script.LiteralArray(elements[0], elements...))
+				return c.Array(elements)
 			}
 			
-			var expression = c.ScanExpression()
+			var length = c.ScanType(c.Number()).(Number)
 			c.Expecting(")")
 			
-			n, err := c.Script.ToArray(script.Number(""), expression.Type)
-			if err != nil {
-				c.RaiseError(compiler.Translatable{
-					compiler.English: err.Error(),
-				})
-			}
-			
-			return compiler.ScriptType(n)
+			return c.Array(c.Number(), int(length.Literal.Int64()))
 		}
 		
 		/*if c.Token() == "[" {

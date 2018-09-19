@@ -1,6 +1,6 @@
 package Number
 
-import "github.com/qlova/script"
+import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 
 import (
@@ -8,29 +8,29 @@ import (
 	"strings"
 )
 
-var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) *compiler.Type {
-	if A, ok := a.Type.(script.Number); ok  {
+var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
+	if A, ok := a.(Number); ok  {
 		
-		if B, ok := b.Type.(script.Number); ok {
+		if B, ok := b.(Number); ok {
 			
 			switch symbol {
 				case "+":
-					return compiler.ScriptType(c.Script.Add(A, B))
+					return c.Add(A, B)
 
 				case "-":
-					return compiler.ScriptType(c.Script.Subtract(A, B))
+					return c.Sub(A, B)
 
 				case "*":
-					return compiler.ScriptType(c.Script.Multiply(A, B))
+					return c.Mul(A, B)
 
 				case "/":
-					return compiler.ScriptType(c.Script.Divide(A, B))
+					return c.Div(A, B)
 					
 				case "%":
-					return compiler.ScriptType(c.Script.Modulo(A, B))
+					return c.Mod(A, B)
 					
 				case "^":
-					return compiler.ScriptType(c.Script.Power(A, B))
+					return c.Pow(A, B)
 			}
 			
 			
@@ -41,21 +41,14 @@ var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) *compi
 }
 
 var Expression = compiler.Expression{
-	Detect: func(c *compiler.Compiler) *compiler.Type {
+	Detect: func(c *compiler.Compiler) compiler.Type {
 		
 		if c.Token() == "number" {
 			c.Expecting("(")
 			var expression = c.ScanExpression()
 			c.Expecting(")")
 			
-			n, err := c.Script.ToNumber(expression.Type)
-			if err != nil {
-				c.RaiseError(compiler.Translatable{
-					compiler.English: err.Error(),
-				})
-			}
-			
-			return compiler.ScriptType(n)
+			return c.Script.ToNumber(expression)
 		}
 		
 		switch c.Token()[0] {
@@ -90,7 +83,7 @@ var Expression = compiler.Expression{
 						c.Call(&Factorial)
 					}*/
 					
-					return compiler.ScriptType(c.Script.LiteralNumber(b.String()))
+					return c.Script.BigNumber(&b)
 				} else {
 					return nil
 				}

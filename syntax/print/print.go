@@ -1,5 +1,6 @@
 package Print
 
+import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 	
 
@@ -10,44 +11,21 @@ var Statement = compiler.Statement{
 	
 	OnScan: func(c *compiler.Compiler) {
 		c.Expecting("(")
-		var expression = c.ScanExpression()
 		
-		s, err := c.Script.ToString(expression.Type)
-		if err != nil {
-			c.RaiseError(compiler.Translatable{
-				compiler.English: err.Error(),
-			})
-		}
-
-		c.Script.Print(s)
+		//Deal with the first argument.
+		var Arguments = []Type{ c.ToString(c.ScanExpression()) }
 		
+		//Deal with the subsequent arguments.
 		for {
 			if c.Peek() == "," {
 				c.Scan()
-				//TODO deal with other types.
-				
-				var expression = c.ScanExpression()
-		
-				s, err := c.Script.ToString(expression.Type)
-				if err != nil {
-					c.RaiseError(compiler.Translatable{
-						compiler.English: err.Error(),
-					})
-				}
-
-				c.Script.Print(s)
-				
+				Arguments = append(Arguments, c.Script.ToString(c.ScanExpression()))
 			} else {
 				c.Expecting(")")
 				break
 			}
 		}
 		
-		c.Script.Print(c.Script.LiteralString(`"\n"`))
-		
-		//Convert to String.
-		
-		
-
+		c.Print(Arguments...)
 	},
 }

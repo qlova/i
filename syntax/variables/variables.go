@@ -1,15 +1,10 @@
 package Variables
 
 import "github.com/qlova/script/compiler"
-import qlova "github.com/qlova/script"
-import "github.com/qlova/i/syntax/errors"
 
 var Expression = compiler.Expression{
-	Detect: func(c *compiler.Compiler) *compiler.Type {
-		if c.GetVariable(c.Token()).Defined {
-			return compiler.ScriptType(c.Script.Raw(c.GetVariable(c.Token()).Type.Type, c.Token()))
-		}
-		return nil
+	Detect: func(c *compiler.Compiler) compiler.Type {
+		return c.GetVariable(c.Token())
 	},
 }
 
@@ -22,56 +17,33 @@ var Statement = compiler.Statement {
 			if c.Peek() != "=" {
 				return false
 			}
-
+			
 			c.Expecting("=")
-			
-			var expression = c.ScanExpression()
-			
-			c.Script.New(expression.Type, name)
-			
-			c.SetVariable(name, expression)
+			c.Define(name, c.ScanExpression())
 			
 			return true
+			
 		} else {
 			
 			var name = c.Token()
-			var variable = c.GetVariable(name).Type.Type
+			var variable = c.Variable(name)
 			
 			//Functions
-			if c.Peek() == "(" && variable.Equals(qlova.FunctionType{}) {
+			/*if c.Peek() == "(" && variable.Equals(qlova.FunctionType{}) {
 				c.Scan()
 				c.Expecting(")")
 				
 				c.Script.RunFunctionType(name, nil)
 				
 				return true
-			}
+			}*/
 			
-			//Arrays
-			if c.Peek() == "[" && variable.Equals(qlova.Array{}) {
-				c.Scan()
+			if c.ScanIf("=") {
 				
-				var index = c.ScanExpression()
-				if !index.Type.Equals(qlova.Number("")) {
-					c.RaiseError(errors.IndexError())
-				}
-				c.Expecting("]")
+				c.Set(variable, c.ScanType(variable))
 				
-				name = c.Script.IndexArrayRaw(name, index.Type.String())
-				variable = variable.(qlova.Array).Subtype()
+				return true
 			}
-			
-			c.Expecting("=")
-			
-			var expression = c.ScanExpression()
-			
-			if !expression.Type.Equals(variable) {
-				c.ExpectingTypeName(variable.Name(), expression.Type.Name())
-			}
-			
-			c.Script.Set(expression.Type, name)
-			
-			return true
 		}
 		
 		return false

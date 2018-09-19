@@ -1,6 +1,6 @@
 package Read
 
-import "github.com/qlova/script"
+import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 
 var Name = compiler.Translatable{
@@ -15,25 +15,23 @@ var Expression = compiler.Expression {
 		c.Expecting("(")
 		
 		if c.ScanIf(")") {
-			return *compiler.ScriptType(c.Script.ReadSymbol(c.Script.LiteralSymbol(`'\n'`)))
+			return c.Read(c.Symbol('\n'))
 		}
 		
 		var argument = c.ScanExpression()
 		c.Expecting(")")
 		
-		switch argument.Type.(type) {
-			case script.Symbol:
+		switch argument.(type) {
+			case Symbol:
 				
-				return *compiler.ScriptType(
-					c.Script.ReadSymbol(argument.Type.(script.Symbol)),
-				)
+				return c.Read(argument)
 			
 			default:
 				c.Unimplemented()
 				
 		}
 		
-		return compiler.Type{}
+		return nil
 	},
 }
 
