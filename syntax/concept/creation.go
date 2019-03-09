@@ -5,36 +5,39 @@ import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 
 import (
-	"fmt"
-	"os"
-	"bytes"
-	"runtime/debug"
+	//"fmt"
+	//"os"
+	//"bytes"
+	//"runtime/debug"
 )
 
-func Create(c *compiler.Compiler, Name string, concept Concept) Function {
-	if len(concept.Arguments) == 0 {
-		//This is easy enough to handle.
-		if _, ok := Functions[Name]; !ok {
-			f := c.Function(func() {
-				c.CompileCache(concept.Cache)
-			})
-			f.Promote(Name) 
-			Functions[Name] = f
-		}
-
-		return Functions[Name]
+func Create(c *compiler.Compiler, Name string, concept Concept, args func(*compiler.Compiler)) Func {
+	//This is easy enough to handle.
+	if _, ok := Functions[Name]; !ok {
+		f := c.Func(func() {
+			c.GainScope()
+			if args != nil {
+				args(c)
+			}
+			
+			c.CompileCache(concept.Cache)
+			c.LoseScope()
+		}, Name)
+		Functions[Name] = f
 	}
-	
-	panic("concept.Create(): Cannot capture a concept without function arguments.")
+
+	return Functions[Name]
 }
 
 func CreateAndCall(c *compiler.Compiler, Name string, concept Concept) compiler.Type {
+	
 	if len(concept.Arguments) == 0 {
 		c.Expecting("(")
 		c.Expecting(")")
 		
-		f := Create(c, Name, concept)
-		return f.Call()
+		f := Create(c, Name, concept, nil)
+		
+		return f.Run()
 
 	}
 	
@@ -59,59 +62,16 @@ func CreateAndCall(c *compiler.Compiler, Name string, concept Concept) compiler.
 	
 	c.Expecting(")")
 	
-	var ReflectedFunctionType = reflect.FuncOf(Reflections, nil, false)
+	f := Create(c, Name, concept, func(c *compiler.Compiler) {
+		for i := range Arguments {
+			c.SetVariable(concept.Arguments[i], Arguments[i].Value().Arg(concept.Arguments[i]))
+		}
+	})
 	
-	if _, ok := Functions[Name]; !ok {
-		f := c.Function(reflect.MakeFunc(ReflectedFunctionType, func(args []reflect.Value) (results []reflect.Value) {
-			c.GainScope()
-			for i := range Arguments {
-				c.SetVariable(concept.Arguments[i], args[i].Interface().(Type))
-			}
-			
-			var b bytes.Buffer
-			c.StdErr = append(c.StdErr, &b)
-			var linenumber = c.Scanners[len(c.Scanners)-1].Line
-			
-			defer func(c *compiler.Compiler, line int) {
-				
-				c.StdErr = c.StdErr[:len(c.StdErr)-1] // restoring the real stdout
-				
-				if r := recover(); r != nil {
-					if r == "error" {
-						c.Errors = true
-						
-						if os.Getenv("PANIC") == "1" { 
-							fmt.Println(b.String())
-							panic("PANIC=1")
-						}
-						
-						if len(Arguments) > 0 {
-							c.Scanners[len(c.Scanners)-1].Line = line-c.LineOffset
-							c.RaiseError(compiler.Translatable{
-								compiler.English: "Cannot pass those arguments to '"+Name+
-								"' because\n\n"+b.String(),
-							})
-						}
-						fmt.Println(b.String())
-						panic("error")
-						
-					} else if r != "done" {
-						fmt.Println(r, string(debug.Stack()))
-					}
-				}
-			}(c, linenumber)
-			
-			c.CompileCache(concept.Cache)
-			c.LoseScope()
-			
-			return nil
-		}).Interface())
-		f.NameArguments(concept.Arguments)
-		f.Promote(Name)
-		
-		Functions[Name] = f
+	if f.HasReturnValue() {
+		return f.Call(Arguments...) //TODO deal with returns
 	}
-	
-	f := Functions[Name]
-	return f.Call(Arguments...) //TODO deal with returns
+
+	f.Run(Arguments...)
+	return nil
 }

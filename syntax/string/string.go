@@ -2,17 +2,14 @@ package String
 
 import "strconv"
 import "github.com/qlova/script/compiler"
-import . "github.com/qlova/script"
-
-
 
 var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
 	
 	//Concatenate strings.
-	if StringA, ok := a.(String); ok && symbol == "+" {
+	if a.Value().Is(c.String()) && symbol == "+" {
 		
-		if StringB, ok := b.(String); ok {
-			return c.Join(StringA, StringB)
+		if b.Value().Is(c.String()) {
+			return a.Value().String().Add(b.Value().String())
 		}
 		
 	}
@@ -30,7 +27,7 @@ var Expression = compiler.Expression{
 			var expression = c.ScanExpression()
 			c.Expecting(")")
 			
-			return c.ToString(expression)
+			return expression.Value().String()
 		}
 		
 		
@@ -44,7 +41,7 @@ var Expression = compiler.Expression{
 				})
 			}
 			
-			return c.Script.String(str)
+			return c.String(str)
 		}
 		
 		return nil

@@ -1,6 +1,5 @@
-package Number
+package Integer
 
-import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 
 import (
@@ -9,7 +8,21 @@ import (
 )
 
 var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
-	if A, ok := a.(Number); ok  {
+	
+	if a.Value().Is(c.Int())  {
+		
+		if b.Value().Is(c.Int()) {
+			
+			switch symbol {
+				case "+":
+					return a.Value().Int().Add(b.Value().Int())
+			}
+			
+		}
+		
+	}
+	
+	/*if A, ok := a.(Number); ok  {
 		
 		if B, ok := b.(Number); ok {
 			
@@ -36,19 +49,19 @@ var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compil
 			
 		}
 		
-	}
+	}*/
 	return nil
 }
 
 var Expression = compiler.Expression{
 	Detect: func(c *compiler.Compiler) compiler.Type {
 		
-		if c.Token() == "number" {
+		if c.Token() == "integer" {
 			c.Expecting("(")
 			var expression = c.ScanExpression()
 			c.Expecting(")")
 			
-			return c.Script.ToNumber(expression)
+			return expression.Value().Int()
 		}
 		
 		switch c.Token()[0] {
@@ -83,7 +96,7 @@ var Expression = compiler.Expression{
 						c.Call(&Factorial)
 					}*/
 					
-					return c.Script.BigNumber(&b)
+					return c.BigInt(&b)
 				} else {
 					return nil
 				}

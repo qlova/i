@@ -1,7 +1,7 @@
 package For
 
 import "github.com/qlova/script/compiler"
-import qlova "github.com/qlova/script"
+import . "github.com/qlova/script"
 
 var Statement = compiler.Statement{
 	Name: compiler.Translatable{
@@ -15,15 +15,16 @@ var Statement = compiler.Statement{
 		c.Expecting("in")
 		var array = c.ScanExpression()
 		
-		if _, ok := array.Type.(qlova.List); !ok {
+		if _, ok := array.(List); !ok {
 			c.RaiseError(compiler.Translatable{
 				compiler.English: "Can only iterate over lists!",
 			})
 		}
 		
-		c.Script.ForEachList("", variable, array.Type.(qlova.List), func(q *qlova.Script) {
+		c.ForEach("i", variable, array.(List), func(i Number, v Type, q *Script) {
 			c.GainScope()
-			c.SetVariable(variable, *compiler.ScriptType(array.Type.(qlova.List).Subtype()))
+			c.SetVariable("i", i)
+			c.SetVariable(variable, v)
 			if c.ScanIf(":") {
 				c.CompileBlock("", "\n")
 			} else {

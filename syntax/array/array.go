@@ -1,41 +1,46 @@
 package Array
 
-import "github.com/qlova/script/compiler"
 import . "github.com/qlova/script"
+import "github.com/qlova/script/compiler"
 import "github.com/qlova/i/syntax/errors"
 
+
 var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
-	if array, ok := a.(Array); ok && symbol == "[" {
-		
-		if n, ok := b.(Number); !ok {
+	
+	if a.Value().IsArray() && symbol == "[" {
+
+		if !b.Value().Is(c.Int()) {
 			c.RaiseError(errors.IndexError())
 		} else {
 			c.Expecting("]")
 
-			return c.Index(array, n)
+			return a.Value().Array().Index(b.Value().Int())
 		}
-		
+
 	}
+	
 	return nil
 }
 
 var Statement = compiler.Statement {
 	Detect: func(c *compiler.Compiler) bool {
 		if c.GetVariable(c.Token()).Defined {
+			
 			var name = c.Token()
 			var variable = c.Variable(name)
 
-			if array, ok := variable.(Array); ok && c.Peek() == "[" {
+			if variable.Value().IsArray() && c.Peek() == "[" {
 				c.Scan()
 				
-				var index = c.ScanType(c.Number()).(Number)
+				var index = c.ScanType(c.Int()).(Int)
 				c.Expecting("]")
 				
 				c.Expecting("=")
 			
-				c.Modify(array, index, c.ScanType(array.SubType()))
+				variable.Value().Array().Modify(index, c.ScanType(variable.Value().Array().Subtype()))
 				return true
 			}
+			
 		}
 		return false
 	},
@@ -44,7 +49,7 @@ var Statement = compiler.Statement {
 var Expression = compiler.Expression{
 	Detect: func(c *compiler.Compiler) compiler.Type {
 		
-		if c.Token() == "#" {
+		/*if c.Token() == "#" {
 			var array = c.Shunt(c.Expression(), 5) //Custom operator precidence.
 			
 			switch array.(type) {
@@ -59,17 +64,17 @@ var Expression = compiler.Expression{
 						compiler.English: "Cannot take the length of type "+array.Name(),
 					})
 			}
-		}
+		}*/
 		
 		if c.Token() == "array" {
 			c.Expecting("(")
 			
 			//Special case, we want to convert a list literal into an array literal!
-			if c.Peek() == "[" {
+			/*if c.Peek() == "[" {
 				c.Scan()
 				
 				var expression = c.ScanExpression()
-				var elements []Type
+				var elements []script.Type
 				
 				elements = append(elements, expression)
 				
@@ -87,12 +92,12 @@ var Expression = compiler.Expression{
 				}
 				
 				return c.Array(elements)
-			}
+			}*/
 			
-			var length = c.ScanType(c.Number()).(Number)
+			var length = c.ScanType(c.Int()).(Int)
 			c.Expecting(")")
 			
-			return c.Array(c.Number(), int(length.Literal.Int64()))
+			return c.Int().Array(int(length.Literal().Int64()))
 		}
 		
 		/*if c.Token() == "[" {

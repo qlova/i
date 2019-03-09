@@ -19,7 +19,7 @@ var Statement = compiler.Statement {
 			}
 			
 			c.Expecting("=")
-			c.Define(name, c.ScanExpression())
+			c.SetVariable(name, c.ScanExpression().Value().Var(name))
 			
 			return true
 			
@@ -39,9 +39,7 @@ var Statement = compiler.Statement {
 			}*/
 			
 			if c.ScanIf("=") {
-				
-				c.Set(variable, c.ScanType(variable))
-				
+				variable.Value().Set(c.ScanType(variable))
 				return true
 			}
 		}

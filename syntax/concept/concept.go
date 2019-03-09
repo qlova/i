@@ -16,7 +16,7 @@ type Concept struct {
 
 var Concepts = make(map[string]Concept)
 
-var Functions = make(map[string]Function)
+var Functions = make(map[string]Func)
 
 var Statement = compiler.Statement {
 	Name: Name,
@@ -53,13 +53,13 @@ var Statement = compiler.Statement {
 		
 		var Name = c.Token()
 		
-		if function, ok := c.Variable(Name).(Function); ok {
+		if function := c.GetVariable(Name); function.Defined && function.Value().IsFunc() {
 			
-			if len(function.Arguments()) == 0 {
+			if len(function.Value().Func().Arguments()) == 0 {
 				c.Expecting("(")
 				c.Expecting(")")
 				
-				function.Call()
+				function.Value().Func().Run()
 				return true
 			}
 			
@@ -68,7 +68,6 @@ var Statement = compiler.Statement {
 		}
 		
 		if concept, ok := Concepts[Name]; ok {
-
 			CreateAndCall(c, Name, concept)
 			return true
 		}
@@ -85,7 +84,7 @@ var Expression = compiler.Expression{
 			if c.Peek() == "(" {
 				return CreateAndCall(c, Name, concept)
 			} else {
-				return Create(c, Name, concept)
+				return Create(c, Name, concept, nil)
 			}
 		}
 		return nil

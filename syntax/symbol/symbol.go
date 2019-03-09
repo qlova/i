@@ -11,7 +11,7 @@ var Expression = compiler.Expression{
 			var expression = c.ScanExpression()
 			c.Expecting(")")
 			
-			return c.Script.ToSymbol(expression)
+			return expression.Value().Rune()
 		}
 		
 		if c.Token()[0] == '\'' {
@@ -23,7 +23,7 @@ var Expression = compiler.Expression{
 				})
 			}
 			
-			return c.Symbol(v)
+			return c.Rune(v)
 		}
 		
 		return nil

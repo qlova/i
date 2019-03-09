@@ -38,7 +38,7 @@ var Expression = compiler.Expression{
 				}
 			}
 			
-			return c.List(elements...))
+			return c.List(elements...)
 		}
 		
 		return nil
