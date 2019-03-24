@@ -49,32 +49,27 @@ var Statement = compiler.Statement {
 var Expression = compiler.Expression{
 	Detect: func(c *compiler.Compiler) compiler.Type {
 		
-		/*if c.Token() == "#" {
-			var array = c.Shunt(c.Expression(), 5) //Custom operator precidence.
+		if c.Token() == "#" {
+			var collection = c.Shunt(c.Expression(), 5) //Custom operator precidence.
 			
-			switch array.(type) {
-				case Array:
-					return c.Length(array)
-					
-				case List:
-					return c.Length(array)
-				
-				default:
-					c.RaiseError(compiler.Translatable{
-						compiler.English: "Cannot take the length of type "+array.Name(),
-					})
+			if collection.Value().IsArray() {
+				return c.Len(collection)
+			} else {
+				c.RaiseError(compiler.Translatable{
+					compiler.English: "Cannot take the length of type "+collection.LanguageType().Name(),
+				})
 			}
-		}*/
+		}
 		
 		if c.Token() == "array" {
 			c.Expecting("(")
 			
 			//Special case, we want to convert a list literal into an array literal!
-			/*if c.Peek() == "[" {
+			if c.Peek() == "[" {
 				c.Scan()
 				
 				var expression = c.ScanExpression()
-				var elements []script.Type
+				var elements []Type
 				
 				elements = append(elements, expression)
 				
@@ -91,8 +86,8 @@ var Expression = compiler.Expression{
 					}
 				}
 				
-				return c.Array(elements)
-			}*/
+				return c.Array(elements...)
+			}
 			
 			var length = c.ScanType(c.Int()).(Int)
 			c.Expecting(")")

@@ -1,11 +1,18 @@
 package String
 
+//import "fmt"
+//import "reflect"
+
 import "strconv"
 import "github.com/qlova/script/compiler"
 
 var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
 	
 	//Concatenate strings.
+	
+	//fmt.Println(reflect.TypeOf(a.LanguageType()).Name(), reflect.TypeOf(b.LanguageType()).Name())
+	
+	//TODO use IsString methods
 	if a.Value().Is(c.String()) && symbol == "+" {
 		
 		if b.Value().Is(c.String()) {

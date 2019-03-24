@@ -16,6 +16,16 @@ var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compil
 			switch symbol {
 				case "+":
 					return a.Value().Int().Add(b.Value().Int())
+				case "*":
+					return a.Value().Int().Mul(b.Value().Int())
+				case "-":
+					return a.Value().Int().Sub(b.Value().Int())
+				case "/":
+					return a.Value().Int().Div(b.Value().Int())
+				case "^":
+					return a.Value().Int().Pow(b.Value().Int())
+				case "%":
+					return a.Value().Int().Mod(b.Value().Int())
 			}
 			
 		}

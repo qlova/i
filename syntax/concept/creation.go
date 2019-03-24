@@ -12,7 +12,7 @@ import (
 )
 
 func Create(c *compiler.Compiler, Name string, concept Concept, args func(*compiler.Compiler)) Func {
-	//This is easy enough to handle.
+
 	if _, ok := Functions[Name]; !ok {
 		f := c.Func(func() {
 			c.GainScope()

@@ -7,17 +7,21 @@ import (
 	"github.com/qlova/i/syntax/print"
 	"github.com/qlova/i/syntax/variables"
 	"github.com/qlova/i/syntax/concept"
+	"github.com/qlova/i/syntax/read"
+	"github.com/qlova/i/syntax/for"
+	"github.com/qlova/i/syntax/write"
 	
 	//Types
 	"github.com/qlova/i/syntax/integer"
 	"github.com/qlova/i/syntax/symbol"
 	"github.com/qlova/i/syntax/string"
 	"github.com/qlova/i/syntax/array"
+	"github.com/qlova/i/syntax/list"
 	
 	
 	
 	/*"github.com/qlova/i/syntax/if"
-	"github.com/qlova/i/syntax/for"
+	
 	
 	
 	"github.com/qlova/i/syntax/catch"
@@ -26,15 +30,8 @@ import (
 	
 	"github.com/qlova/i/syntax/string"
 	
-	
-	"github.com/qlova/i/syntax/list"
-	
-	
-	
-	"github.com/qlova/i/syntax/write"
-	
 	"github.com/qlova/i/syntax/import"
-	"github.com/qlova/i/syntax/read"*/
+	*/
 )
 
 var Syntax = compiler.NewSyntax("ilang")
@@ -45,6 +42,8 @@ func init() {
 	Syntax.RegisterStatement(Variables.Statement)
 	Syntax.RegisterStatement(Concept.Statement)
 	Syntax.RegisterStatement(Concept.Return)
+	Syntax.RegisterStatement(For.Statement)
+	Syntax.RegisterStatement(Write.Statement)
 	
 	Syntax.RegisterExpression(Variables.Expression)
 	
@@ -55,6 +54,8 @@ func init() {
 	Syntax.RegisterExpression(Symbol.Expression)
 	Syntax.RegisterExpression(String.Expression)
 	Syntax.RegisterExpression(Array.Expression)
+	Syntax.RegisterExpression(List.Expression)
+	Syntax.RegisterExpression(Read.Expression)
 	
 	Syntax.RegisterShunt(Array.Shunt)
 	Syntax.RegisterShunt(String.Shunt)
@@ -96,8 +97,6 @@ func init() {
 	Syntax.RegisterExpression(List.Expression)
 	Syntax.RegisterExpression(Catch.Expression)
 	Syntax.RegisterExpression(Catch.ErrorExpression)
-	
-	Syntax.RegisterExpression(Read.Expression)
 	
 	Syntax.RegisterExpression(Import.Expression)
 	

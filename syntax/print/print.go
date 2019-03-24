@@ -12,6 +12,12 @@ var Statement = compiler.Statement{
 	OnScan: func(c *compiler.Compiler) {
 		c.Expecting("(")
 		
+		if c.Peek() == ")" {
+			c.Scan()
+			c.Print()
+			return
+		}
+		
 		//Deal with the first argument.
 		var Arguments = []Type{
 			c.ScanExpression().Value().String(),

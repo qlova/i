@@ -2,9 +2,8 @@ package List
 
 import "github.com/qlova/script/compiler"
 import . "github.com/qlova/script"
-import "github.com/qlova/i/syntax/errors"
 
-var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
+/*var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
 	if list, ok := a.(List); ok && symbol == "[" {
 		
 		if n, ok := b.(Number); !ok {
@@ -16,15 +15,15 @@ var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compil
 		
 	}
 	return nil
-}
+}*/
 
 var Expression = compiler.Expression{
 	Detect: func(c *compiler.Compiler) compiler.Type {		
 		if c.Token() == "[" {
 			
-			var elements []Type
 			var expression = c.ScanExpression()
-			elements = append(elements, expression)
+			var elements []Type
+				elements = append(elements, expression)
 			
 			for {
 				if c.ScanIf(",") {

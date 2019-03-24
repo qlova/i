@@ -1,5 +1,6 @@
 package Read
 
+
 import . "github.com/qlova/script"
 import "github.com/qlova/script/compiler"
 
@@ -15,14 +16,14 @@ var Expression = compiler.Expression {
 		c.Expecting("(")
 		
 		if c.ScanIf(")") {
-			return c.Read(c.Symbol('\n'))
+			return c.Read(c.Rune('\n'))
 		}
 		
 		var argument = c.ScanExpression()
 		c.Expecting(")")
 		
 		switch argument.(type) {
-			case Symbol:
+			case Rune:
 				
 				return c.Read(argument)
 			
