@@ -10,6 +10,7 @@ import (
 	"github.com/qlova/i/syntax/read"
 	"github.com/qlova/i/syntax/for"
 	"github.com/qlova/i/syntax/write"
+	"github.com/qlova/i/syntax/if"
 	
 	//Types
 	"github.com/qlova/i/syntax/integer"
@@ -20,7 +21,7 @@ import (
 	
 	
 	
-	/*"github.com/qlova/i/syntax/if"
+	/*
 	
 	
 	
@@ -44,6 +45,7 @@ func init() {
 	Syntax.RegisterStatement(Concept.Return)
 	Syntax.RegisterStatement(For.Statement)
 	Syntax.RegisterStatement(Write.Statement)
+	Syntax.RegisterStatement(If.Statement)
 	
 	Syntax.RegisterExpression(Variables.Expression)
 	

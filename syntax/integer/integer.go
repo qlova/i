@@ -9,9 +9,9 @@ import (
 
 var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compiler.Type {
 	
-	if a.Value().Is(c.Int())  {
+	if a.Value().IsInt()  {
 		
-		if b.Value().Is(c.Int()) {
+		if b.Value().IsInt() {
 			
 			switch symbol {
 				case "+":
@@ -26,6 +26,9 @@ var Shunt = func(c *compiler.Compiler, symbol string, a, b compiler.Type) compil
 					return a.Value().Int().Pow(b.Value().Int())
 				case "%":
 					return a.Value().Int().Mod(b.Value().Int())
+					
+				case "=":
+					return a.Value().Int().Equals(b.Value().Int())
 			}
 			
 		}

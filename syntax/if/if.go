@@ -1,7 +1,6 @@
 package If
 
 import "github.com/qlova/script/compiler"
-import ."github.com/qlova/script"
 
 var Statement = compiler.Statement{
 	Name: compiler.Translatable{
@@ -9,16 +8,37 @@ var Statement = compiler.Statement{
 	},
 	
 	OnScan: func(c *compiler.Compiler) {
-		var condition = c.ScanType(Boolean{}).(Boolean)
+		var condition = c.ScanExpression()
 		
-		c.If(condition, func(q *Script) {
-			c.GainScope()
-			if c.ScanIf(":") {
-				c.ScanStatement()
+		var body compiler.Cache
+		//var chain []compiler.Cache
+		var end compiler.Cache
+		
+		var inline bool
+		
+		if c.ScanIf(":") {
+			inline = true
+			body = c.NewCache("", "|", "\n")
+		} else {
+			body = c.NewCache("", "|", "}")
+		}
+		
+		if body.Match == "|" {
+			if inline {
+				end = c.NewCache("", "|", "\n")
 			} else {
-				c.CompileBlock("", "}")
+				end = c.NewCache("", "}")
 			}
+		}
+		
+		c.If(condition.Value().Bool(), func() {
+			c.GainScope()
+			c.CompileCache(body)
 			c.LoseScope()
-		})
+		}, c.Else(func() {
+			c.GainScope()
+			c.CompileCache(end)
+			c.LoseScope()
+		}))
 	},
 }
