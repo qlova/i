@@ -1,0 +1,275 @@
+# i language spec.
+
+Reserved Words:
+if, for, return, break, go, in
+
+Builtin Functions:
+defrost, print, freeze, open, load, copy, move, delete, throw, catch
+
+Nymber types:
+number, real, rational, natural, integer, duplex, complex, quaternion, octonion, sedenion, unit
+
+Data types:
+string, symbol, bit, byte, color, image, sound, video, time, error, tag
+
+Builtin structures:
+frozen, array, list, table, pipe, pointer, tensor, vector, matrix, set, tree
+
+Builtin packages (future):
+linked, hash
+
+Builtin values:
+i,j,k,l,generic
+
+## Types
+
+	CustomNumber: number
+
+	Structure
+		Name = ""
+	}
+	
+	main
+		s = Structure()
+		s.Name = "Hello World"
+		
+		Name = s.Name
+		d = Structure //Creates a new block with Structure's members in scope if possible
+			Name = "Test"
+		}
+		
+		/*
+			var d Structure
+			{
+				d.Name = "Test"
+			}
+		*/
+		
+		//print(Structure: Name = "Lol")
+		
+		print(s.Name) //prints 'Hello World'
+		print(d.Name) //prints 'Test'
+		print(Name) // prints 'Hello World'
+		
+		n = CustomNumber(4)
+		print(n) // 4
+	}
+	
+## Methods / Constructors
+
+	Object: string
+	
+	//Change the constructor.
+	Object(string)
+		return "object"
+	}
+	
+	//Change how it casts to other objects.
+	string(Object)
+		return Object
+	}
+	
+	Object.PrintWithExtraNewLine()
+		print(Object)
+		print()
+	}
+	
+	main
+		let o = Object()
+			o.PrintWithExtraNewLine() //\n
+			o = Object("test")
+			o.PrintWithExtraNewLine() //object
+	}
+
+## Interfaces / Contracts
+
+	(Stringable)
+		String() string //Any value with a String method that takes no arguments and returns a string.
+		
+		// This also works on properties, for example: Species[string] is any value with a Species value that is a string.
+	}
+	
+	Animal
+		Species = string()
+	}
+	
+	Animal.String() 
+		return Species
+	}
+	
+	Address
+		Number = number()
+		Street = string()
+		Country = string()
+	}
+	
+	//How to concat strings?
+	Address.String() 
+		return string(Number)+" "+Street+" "+Country
+	}
+	
+	main
+		dog = Animal: Species = "Dog"
+
+		address = Address
+			Number = 1 
+			Street = "Something St" 
+			Country = "Some Country"
+		}
+		
+		stringables = Stringable.list()
+		stringables += dog
+		stringables += address
+		
+		for stringable in stringables
+			print(stringable.String())
+		}
+	
+	}
+	
+## Functions
+	
+	//Type safe, auto converts arguments to the chosen type.
+	add(integer(a, b)) integer 
+		return a + b
+	}
+	
+	//Generic, works with any types that can compile.
+	//Infers return type
+	add(a, b) 
+		return a + b
+	}
+	
+	//Inline function defintion and call.
+	main 
+		print((add(a,b): return a + b)(5, 2))
+	}
+	
+# Arrays, Lists, Tables
+	
+	main
+		a = string.array(1)
+		
+		a[1] = "Hello"
+		
+		print(a[1], a[2], a[0], a[-1]) // "Hello", "Hello", "", "Hello"
+		
+		l = string.list()
+		l += "Hello"
+		l += "World"
+		print(#l) // 2
+		print(l[1], l[2], l[3]) //"Hello", "World", "Hello"
+		
+		t = string.table[string]()
+		
+	}
+
+## Global variables
+
+	context.a = freeze([0, 2, 3, 4, 5])
+
+	main
+		context.a = [] //ERROR: cannot assign value beacuse 'a' is frozen
+		
+		defrost(context.a) = [] //This is allowed.
+
+	}
+
+## Constants
+Zero = 0
+
+## If, Else, Else If, Switch-case.
+
+	main 
+		//if/else/elseif
+		if a = 2: print("a = 2")
+		|| a = 1: print("a = 1")
+		|: print("a is not 1 or 2")
+		
+		//switch-case
+		if a =
+		|| 0: print("a = 0")
+		|| 1: print("a = 1")
+		|| 2: print("a = 2")
+		|| 3: print("a = 3")
+		|: print("a is not 0, 1, 2 or 3")
+	}
+
+
+## Loops
+
+	main
+		//While true
+		for: print("forever")
+		
+		//Structure interation.
+		structure = [0, 1, 2, 3]
+		for element in structure: print(element)
+		for each in structure: print(i)
+		
+		//for i = 1; i <= 100; i++
+		for 100: print(i) //prints 1 to 100
+		for -100: print(i) //Does not execute loop.
+		
+		//While condition
+		for true: print("forever")
+		
+		for: break
+		
+		for: for: break 2
+		
+		//exit
+		break 0
+	}
+	
+## Imports
+
+Folders with .i files are packages implicitly when none of the files have a main function.
+
+They can be imported from the package.i file.
+
+	github.com/qlova/seed [commit hash]
+
+	github.com/qlova/seed/widgets/
+		button
+		row
+		column
+		
+	github.com/qlova/script
+	
+	
+		
+## License
+
+Folders with a license.i file can have special directives that enforce licensing. By default, full ownership is granted to the individual.
+
+eg.
+	license
+		GPLv3
+	}
+
+	
+## The & symbol can be used to reduce repetitive tokens. It acts as the last statement focus.
+
+Text = text.AddTo(app)
+   &.SetColor()
+   &.SetSize()
+   &.SetBorder()
+
+# Generic Types can be created by prefixing a type with the generic prefix, the incomming type is available under the 'generic' substitution.
+
+(package linked)
+.generic.list
+	next = generic.pointer()
+	prev = generic.pointer()
+}
+
+(package other)
+my.list = integer.linked.list()
+
+# Units
+
+width = 100
+pixels = unit[px]
+
+square(0, unit[px](5), pixels(width), 100px)
