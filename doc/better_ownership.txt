@@ -1,0 +1,68 @@
+//Aliases
+x = 2
+{
+	x = 3 //error
+	x.set(3) //error
+}
+print(x) // 2
+
+
+//Mutability
+x $= 2
+{
+	x $= 3
+}
+print(x) // 3
+
+//Value-level immutability
+x $= freeze([1,2,3])
+{
+	x[0] = 0 //error
+}
+print(x) // 2
+
+//Ownership/Trading
+x $= []@integer()
+
+x += @integer(1)
+x += @integer(2)
+x += @integer(3)
+
+{
+	y $= copy(x)
+	y.push(4)
+	print(y) // [1,2,3,4]
+	
+	print(x) // [1,2,3]
+}
+
+{
+	y $= $x //purchase, y is now the owner
+	y.push(4)
+	print(y) // [1,2,3,4]
+	
+	print(x) // []
+}
+
+{
+	y $=$ x //trade, y will be created and ownership will be traded.
+	y.push(4)
+	print(y) // [1,2,3,4]
+	
+	y $$ x //trade when both variables exist.
+	print(x) // []
+}
+
+//Sharing
+
+a $= list.integer(0)
+b %= a
+{
+	x $= list.integer(1)
+	y %= x
+	y[0] = 2
+	print(x[0]) // 2
+	print(y[0]) // 2
+	
+	b = y // error, y is too valuable to share with b, you will need to purchase it instead!
+}
