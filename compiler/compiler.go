@@ -130,6 +130,7 @@ func (c *Compiler) CompileBlock() error {
 
 	for {
 		if c.Peek().Is("}") {
+			c.Scan()
 			break
 		}
 
