@@ -3,11 +3,11 @@ package compiler
 import (
 	"strconv"
 
-	"github.com/qlova/script/language"
+	"github.com/qlova/usm"
 )
 
 //ScanExpression scans an expression.
-func (c *Compiler) ScanExpression() (language.Value, error) {
+func (c *Compiler) ScanExpression() (usm.Value, error) {
 	var token = c.Scan()
 
 	//String
@@ -16,7 +16,7 @@ func (c *Compiler) ScanExpression() (language.Value, error) {
 		if err != nil {
 			return nil, c.NewError("invalid string (", err, ")")
 		}
-		return c.Literal().String(literal), nil
+		return c.String(literal), nil
 	}
 
 	return nil, c.NewError("invalid expression")

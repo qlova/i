@@ -23,10 +23,11 @@ func (c *Compiler) CompileStatement() (err error) {
 		if err != nil {
 			return err
 		}
-		c.Print(expression)
+		c.Discard(c.Send(nil, expression))
 		if !c.ScanIf(')') {
 			return c.NewError("expecting )")
 		}
+		c.Discard(c.Send(nil, c.String("\n")))
 	case "":
 		return io.EOF
 	case "\n":

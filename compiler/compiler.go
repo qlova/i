@@ -8,11 +8,11 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/qlova/script"
+	"github.com/qlova/usm"
 )
 
 type Compiler struct {
-	script.Ctx
+	usm.Target
 
 	//Packages
 	PackageCtx
