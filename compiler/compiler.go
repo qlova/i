@@ -136,6 +136,9 @@ func (c *Compiler) CompileBlock() error {
 
 		err := c.CompileStatement()
 		if err != nil {
+			if err == io.EOF {
+				return c.NewError("expecting a '}' to close the current block, but the file ended")
+			}
 			return err
 		}
 	}
