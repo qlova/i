@@ -26,7 +26,7 @@ i,j,k,l,generic
 	CustomNumber: number
 
 	Structure
-		Name = ""
+		Name: ""
 	}
 	
 	main
@@ -34,9 +34,9 @@ i,j,k,l,generic
 		s.Name = "Hello World"
 		
 		Name = s.Name
-		d = Structure //Creates a new block with Structure's members in scope if possible
-			Name = "Test"
-		}
+		d = Structure( //Creates a new block with Structure's members in scope if possible
+			Name: "Test"
+		)
 		
 		/*
 			var d Structure
@@ -109,7 +109,7 @@ i,j,k,l,generic
 	}
 	
 	main
-		dog = Animal: Species = "Dog"
+		dog = Animal: Species: "Dog"
 
 		address = Address
 			Number = 1 

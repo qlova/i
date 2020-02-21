@@ -13,7 +13,7 @@ import (
 
 var Trace = os.Getenv("TRACE") != ""
 var Panic = os.Getenv("PANIC") != ""
-var Counter = 2
+var Counter = 1
 
 type Error struct {
 	Formatted string

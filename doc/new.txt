@@ -1,0 +1,30 @@
+
+!   not equal, not
+@   scope operator
+#   length/size
+$   new variable, ownership
+%   mod
+^   search operator
+&   semantic and
+*   mul
+()  function call, expression
+_   blank/empty type
+-   sub
++   add
+=   same, assign
+{}  block, table, object
+[]  array
+:   one-liner
+;   error handling
+'   comment
+"   string
+?   dynamic
+/   div
+.   index, public
+>   less
+<   more
+,   seperator
+~   enum
+`   variable name
+|   else, elseif
+\   escape

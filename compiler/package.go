@@ -11,11 +11,23 @@ type PackageCtx struct {
 	Scopes []Scope
 
 	Directory string
+
+	Concepts map[string]Concept
+
+	Throws bool
 }
 
 //NewPackageCtx returns a new PackageCtx.
 func NewPackageCtx() PackageCtx {
-	return PackageCtx{}
+	return PackageCtx{
+		Scope:    NewScope(),
+		Concepts: make(map[string]Concept),
+	}
+}
+
+//NewCtx returns a new transparent PackageCtx.
+func (c *Compiler) NewCtx() PackageCtx {
+	return c.PackageCtx
 }
 
 //Pop pops the current PackageCtx of the compiler and returns to the PackageCtx.

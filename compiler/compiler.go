@@ -27,6 +27,7 @@ type Compiler struct {
 //New returns a new initialized compiler.
 func New() Compiler {
 	var c Compiler
+	c.PackageCtx = NewPackageCtx()
 	c.Packages = make(map[string]PackageCtx)
 	return c
 }

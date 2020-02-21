@@ -267,9 +267,33 @@ func (scanner *Scanner) scan() Token {
 				}
 				fallthrough
 
+			case '|':
+				if len(token) > 0 {
+					return token //This is an endquote.
+				}
+
+				peek, err := scanner.Reader.Peek(2)
+				if err != nil {
+					return token
+				}
+
+				if err := scanner.readByte(); err != nil {
+					return token
+				}
+
+				//ElseIfs
+				if peek[1] == '|' {
+					if err := scanner.readByte(); err != nil {
+						return token
+					}
+					return Token{peek[0], peek[1]}
+				}
+
+				return Token{peek[0]}
+
 			//These symbols break a token.
 			case ':', '\n', '(', ')', '{', '}', '[', ']', '.', ',', '$', '#',
-				'+', '-', '*', '%', '=', '|', '^', '&', '!', '?', '<', '>', '~', '_', ';':
+				'+', '-', '*', '%', '=', '^', '&', '!', '?', '<', '>', '~', '_', ';':
 				if len(token) > 0 {
 					return token //This is an endquote.
 				}

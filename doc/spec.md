@@ -1,7 +1,11 @@
 # Island
 
 ## Reserved words:
-if, for, in, go, error, errors, return, break, main, to, true, false
+if, for, in, go, return, break, main, to, i, usm
+
+## Builtin constants
+true := 1
+false := 0
 
 ## Builtin functions
 print, out, freeze, embed, open, type, subtype
